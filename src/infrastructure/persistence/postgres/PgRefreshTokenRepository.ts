@@ -36,4 +36,12 @@ export class PgRefreshTokenRepository implements RefreshTokenRepository {
   async revokeAllForUser(userId: string, at: Date): Promise<void> {
     await this.db.query("UPDATE refresh_tokens SET revoked_at = $2 WHERE user_id = $1 AND revoked_at IS NULL", [userId, at]);
   }
+
+  async hasActiveFamily(familyId: string, now: Date): Promise<boolean> {
+    const { rowCount } = await this.db.query(
+      "SELECT 1 FROM refresh_tokens WHERE family_id = $1 AND revoked_at IS NULL AND expires_at > $2 LIMIT 1",
+      [familyId, now],
+    );
+    return (rowCount ?? 0) > 0;
+  }
 }

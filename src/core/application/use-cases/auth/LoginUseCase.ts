@@ -90,6 +90,6 @@ export class LoginUseCase implements UseCase<LoginInput, IssuedSession> {
     await this.users.save(user);
     await this.rateLimiter.reset(`login:${input.ip}`);
     await this.audit.record({ actorId: user.id, action: "auth.login", entity: "user", entityId: user.id, details: { ip: input.ip }, at: now });
-    return this.sessions.issue(user);
+    return this.sessions.start(user);
   }
 }

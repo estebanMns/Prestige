@@ -13,6 +13,7 @@ export interface DecodedAccessToken {
   userId: string;
   email: string;
   role: Role;
+  sessionId: string;
 }
 
 /**
@@ -30,7 +31,7 @@ export class AccessTokenCodec {
   async sign(claims: DecodedAccessToken, now = new Date()): Promise<{ token: string; expiresAt: Date }> {
     const issuedAt = Math.floor(now.getTime() / 1000);
     const expiresAt = new Date((issuedAt + this.settings.ttlSeconds) * 1000);
-    const token = await new SignJWT({ email: claims.email, role: claims.role })
+    const token = await new SignJWT({ email: claims.email, role: claims.role, sid: claims.sessionId })
       .setProtectedHeader({ alg: AccessTokenCodec.ALGORITHM, typ: "JWT" })
       .setSubject(claims.userId)
       .setIssuer(this.settings.issuer)
@@ -52,10 +53,16 @@ export class AccessTokenCodec {
         audience: this.settings.audience,
       });
       const role = payload.role;
-      if (typeof payload.sub !== "string" || typeof payload.email !== "string" || !(ROLES as readonly unknown[]).includes(role)) {
+      const sid = payload.sid;
+      if (
+        typeof payload.sub !== "string" ||
+        typeof payload.email !== "string" ||
+        typeof sid !== "string" ||
+        !(ROLES as readonly unknown[]).includes(role)
+      ) {
         return null;
       }
-      return { userId: payload.sub, email: payload.email, role: role as Role };
+      return { userId: payload.sub, email: payload.email, role: role as Role, sessionId: sid };
     } catch (error) {
       if (error instanceof errors.JOSEError) return null;
       throw error;

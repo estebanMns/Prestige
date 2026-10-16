@@ -38,6 +38,8 @@ export interface RefreshTokenRepository {
   save(token: RefreshToken): Promise<void>;
   revokeFamily(familyId: string, at: Date): Promise<void>;
   revokeAllForUser(userId: string, at: Date): Promise<void>;
+  /** true si la sesión tiene un refresh token vigente (no revocado ni vencido). */
+  hasActiveFamily(familyId: string, now: Date): Promise<boolean>;
 }
 
 export interface AuditLogRepository {

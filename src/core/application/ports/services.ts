@@ -21,6 +21,7 @@ export interface AccessTokenClaims {
   userId: string;
   email: string;
   role: Role;
+  sessionId: string;
 }
 
 export interface AccessTokenService {

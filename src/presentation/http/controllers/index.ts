@@ -14,7 +14,8 @@ class Controllers {
   private cache: { auth?: AuthController; catalog?: CatalogController; admin?: AdminController; storefront?: StorefrontController } = {};
 
   private get context() {
-    return new RequestContext(container().accessTokenCodec);
+    const c = container();
+    return new RequestContext(c.accessTokenCodec, c.refreshTokenRepository, c.clock);
   }
 
   get auth(): AuthController {

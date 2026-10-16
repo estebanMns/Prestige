@@ -5,4 +5,6 @@ export interface Actor {
   userId: string;
   email: string;
   role: Role;
+  /** Identificador de la sesión (familia de refresh tokens). Si se cierra, el actor deja de ser válido. */
+  sessionId: string;
 }

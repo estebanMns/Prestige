@@ -49,6 +49,22 @@ describe("LoginUseCase", () => {
     expect(ctx.audit.entries.at(-1)?.action).toBe("auth.login");
   });
 
+  it("una cuenta solo tiene una sesión activa: el segundo inicio cierra la primera", async () => {
+    const first = await ctx.login.execute({ email: TEST_ADMIN.email, password: TEST_ADMIN.password, ip: "1.1.1.1" });
+    const second = await ctx.login.execute({ email: TEST_ADMIN.email, password: TEST_ADMIN.password, ip: "2.2.2.2" });
+
+    const tokens = [...ctx.refreshTokens.items.values()];
+    const firstFamily = tokens[0]!.familyId;
+    const secondFamily = tokens[tokens.length - 1]!.familyId;
+    expect(first.refreshToken).not.toBe(second.refreshToken);
+    expect(firstFamily).not.toBe(secondFamily);
+
+    // La primera sesión queda cerrada y la segunda sigue activa.
+    expect(await ctx.refreshTokens.hasActiveFamily(firstFamily, ctx.clock.now())).toBe(false);
+    expect(await ctx.refreshTokens.hasActiveFamily(secondFamily, ctx.clock.now())).toBe(true);
+    await expect(ctx.refresh.execute({ refreshToken: first.refreshToken })).rejects.toThrow(UnauthenticatedError);
+  });
+
   it("responde igual si el correo no existe o la contraseña es incorrecta", async () => {
     await expect(ctx.login.execute({ email: `nadie-${TEST_ADMIN.email}`, password: "x", ip: "1" })).rejects.toThrow(InvalidCredentialsError);
     await expect(ctx.login.execute({ email: TEST_ADMIN.email, password: "mala", ip: "1" })).rejects.toThrow(InvalidCredentialsError);

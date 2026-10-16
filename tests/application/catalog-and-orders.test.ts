@@ -11,8 +11,8 @@ import { StoreSettings } from "@/core/domain/settings/StoreSettings";
 import { FakeStorage, FixedClock, InMemoryAudit, InMemoryPerfumes, InMemorySettings, SequentialIds } from "../fakes/InMemory";
 import { draft, perfume } from "../fakes/builders";
 
-const admin: Actor = { userId: "u-admin", email: "a@p.co", role: "ADMIN" };
-const asesor: Actor = { userId: "u-asesor", email: "b@p.co", role: "ASESOR" };
+const admin: Actor = { userId: "u-admin", email: "a@p.co", role: "ADMIN", sessionId: "s-admin" };
+const asesor: Actor = { userId: "u-asesor", email: "b@p.co", role: "ASESOR", sessionId: "s-asesor" };
 
 function deps() {
   const perfumes = new InMemoryPerfumes();

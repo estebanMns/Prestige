@@ -97,6 +97,9 @@ export class InMemoryRefreshTokens implements RefreshTokenRepository {
   async revokeAllForUser(userId: string, at: Date) {
     for (const t of this.items.values()) if (t.userId === userId) t.revoke(at);
   }
+  async hasActiveFamily(familyId: string, now: Date) {
+    return [...this.items.values()].some((t) => t.familyId === familyId && !t.revokedAt && t.expiresAt > now);
+  }
 }
 
 export class InMemoryAudit implements AuditLogRepository {
@@ -134,7 +137,7 @@ export class FakeAccessTokens implements AccessTokenService {
     return { token: `access:${claims.userId}`, expiresAt: new Date("2026-10-15T12:15:00Z") };
   }
   async verify(token: string): Promise<AccessTokenClaims> {
-    return { userId: token.replace("access:", ""), email: "x@y.co", role: "ADMIN" };
+    return { userId: token.replace("access:", ""), email: "x@y.co", role: "ADMIN", sessionId: "s1" };
   }
 }
 

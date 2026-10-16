@@ -24,11 +24,23 @@ export class SessionIssuer {
     private readonly refreshTtlDays: number,
   ) {}
 
-  async issue(user: User, familyId: string = this.ids.uuid()): Promise<IssuedSession> {
+  /**
+   * Inicio de sesión: cierra todas las sesiones anteriores del usuario y abre una nueva.
+   * Así una cuenta solo tiene una sesión activa a la vez.
+   */
+  async start(user: User): Promise<IssuedSession> {
+    const now = this.clock.now();
+    await this.refreshTokens.revokeAllForUser(user.id, now);
+    return this.issue(user, this.ids.uuid());
+  }
+
+  /** Renovación: mantiene la misma familia (sesión). */
+  async issue(user: User, familyId: string): Promise<IssuedSession> {
     const { token: accessToken, expiresAt: accessTokenExpiresAt } = await this.accessTokens.sign({
       userId: user.id,
       email: user.email.value,
       role: user.role,
+      sessionId: familyId,
     });
     const { raw, hash } = this.opaqueTokens.generate();
     const refreshTokenExpiresAt = new Date(this.clock.now().getTime() + this.refreshTtlDays * 86_400_000);
