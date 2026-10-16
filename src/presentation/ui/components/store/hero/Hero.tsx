@@ -7,14 +7,14 @@ import { BottleIllustration } from "../../common/BottleIllustration";
 import { useUi } from "../../../state/uiStore";
 import { ESSENCES, type Essence } from "./essences";
 
-/** El 3D se carga solo en el navegador y después de lo esencial de la página. */
+/**
+ * El 3D se carga solo en el navegador y después de lo esencial de la página.
+ * Mientras descarga el modelo se deja el espacio vacío: un placeholder 2D aquí mostraba un diseño
+ * distinto al 3D y el usuario lo veía cambiar al terminar la carga.
+ */
 const Bottle3D = dynamic(() => import("./Bottle3D"), {
   ssr: false,
-  loading: () => (
-    <div className="grid h-full place-items-center">
-      <BottleIllustration color="#a82848" className="w-[40%] opacity-70" />
-    </div>
-  ),
+  loading: () => <div className="h-full" aria-hidden />,
 });
 
 export function Hero({ perfumeCount }: { perfumeCount: number }) {

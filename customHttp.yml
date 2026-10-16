@@ -1,0 +1,7 @@
+customHeaders:
+  # El modelo 3D pesa ~18 MB: que el navegador lo guarde un día evita volver a descargarlo en cada visita.
+  # stale-while-revalidate deja mostrar la copia guardada mientras se revisa si hay una versión nueva.
+  - pattern: '/perfume.glb'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=86400, stale-while-revalidate=604800'
