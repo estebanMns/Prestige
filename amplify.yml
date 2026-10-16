@@ -10,6 +10,8 @@ frontend:
         # Las variables se toman del entorno de Amplify (Configuración de la aplicación → Variables de entorno).
         - echo "DATABASE_URL=${DATABASE_URL}" > .env.production
         - echo "JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}" >> .env.production
+        # DATABASE_SSL_CA debe guardarse en Amplify en una sola línea, con los saltos de línea escritos como \n.
+        - echo "DATABASE_SSL_CA=\"${DATABASE_SSL_CA}\"" >> .env.production
         - echo "APP_URL=${APP_URL}" >> .env.production
         - echo "STORAGE_DRIVER=${STORAGE_DRIVER}" >> .env.production
         - echo "S3_BUCKET=${S3_BUCKET}" >> .env.production
