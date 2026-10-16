@@ -1,7 +1,8 @@
-export const ROLES = ["ADMIN", "ASESOR"] as const;
+export const ROLES = ["PROPIETARIO", "ADMIN", "ASESOR"] as const;
 export type Role = (typeof ROLES)[number];
 
 export const ROLE_LABELS: Record<Role, string> = {
+  PROPIETARIO: "Propietario",
   ADMIN: "Administrador",
   ASESOR: "Asesor",
 };
@@ -22,7 +23,9 @@ export enum Permission {
  */
 export class RolePolicy {
   private static readonly grants: Record<Role, ReadonlySet<Permission>> = {
-    ADMIN: new Set(Object.values(Permission)),
+    PROPIETARIO: new Set(Object.values(Permission)),
+    // El administrador gestiona el catálogo y los pedidos, pero no los datos de contacto de la tienda.
+    ADMIN: new Set(Object.values(Permission).filter((p) => p !== Permission.SettingsUpdate)),
     ASESOR: new Set([Permission.PerfumeCreate, Permission.PerfumeUpdate, Permission.ImageUpload]),
   };
 

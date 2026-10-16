@@ -69,6 +69,13 @@ describe("RolePolicy", () => {
     expect(RolePolicy.allows("ASESOR", Permission.SettingsUpdate)).toBe(false);
     expect(RolePolicy.allows("ADMIN", Permission.PerfumeDelete)).toBe(true);
   });
+
+  it("solo el propietario cambia los datos de la tienda; el administrador no", () => {
+    expect(RolePolicy.allows("PROPIETARIO", Permission.SettingsUpdate)).toBe(true);
+    expect(RolePolicy.allows("ADMIN", Permission.SettingsUpdate)).toBe(false);
+    expect(RolePolicy.allows("ADMIN", Permission.PerfumeDelete)).toBe(true);
+    expect(RolePolicy.allows("ADMIN", Permission.AuditRead)).toBe(true);
+  });
 });
 
 describe("Value objects", () => {
