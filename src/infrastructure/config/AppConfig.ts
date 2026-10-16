@@ -10,6 +10,7 @@ const schema = z.object({
   APP_URL: z.url().default("http://localhost:3000"),
   DATABASE_URL: z.string().min(1, "DATABASE_URL es obligatoria"),
   DATABASE_SSL_CA_FILE: z.string().optional(),
+  DATABASE_SSL_CA: z.string().optional(),
 
   JWT_ACCESS_SECRET: z.string().min(32, "JWT_ACCESS_SECRET debe tener al menos 32 caracteres"),
   JWT_ISSUER: z.string().default("perfumeria-prestige"),
