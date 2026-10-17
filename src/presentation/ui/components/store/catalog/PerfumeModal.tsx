@@ -49,14 +49,14 @@ export function PerfumeModal({ perfumes }: { perfumes: PerfumeDTO[] }) {
     <>
       <div className="scrim" onClick={close} />
       <div className="pointer-events-none fixed inset-0 z-[61] grid place-items-center p-4" role="dialog" aria-modal="true" aria-label={perfume.name}>
-        <div className="modal-card pointer-events-auto grid md:grid-cols-2" style={{ ["--glow" as string]: glowFor(perfume.color) }}>
+        <div className="modal-card pointer-events-auto grid md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]" style={{ ["--glow" as string]: glowFor(perfume.color) }}>
           <button type="button" className="icon-btn absolute right-3.5 top-3.5 z-10 bg-[rgba(var(--ink-rgb),.7)]" onClick={close} aria-label="Cerrar">
             <CloseIcon />
           </button>
-          <div className="media relative min-h-[300px] md:min-h-[460px]">
-            <PerfumeImage imageUrl={perfume.imageUrl} color={perfume.color} alt={perfume.name} illustrationClass="w-[42%]" />
+          <div className="media relative min-h-[300px] md:min-h-full">
+            <PerfumeImage imageUrl={perfume.imageUrl} color={perfume.color} alt={perfume.name} illustrationClass="w-[42%]" fill />
           </div>
-          <div className="flex min-w-0 flex-col gap-4 p-6 md:p-8">
+          <div className="flex min-w-0 flex-col gap-4 break-words p-6 md:p-8">
             <div className="eyebrow">
               {perfume.house} · {perfume.categoryLabel} · {perfume.genderLabel}
             </div>
@@ -111,11 +111,11 @@ export function PerfumeModal({ perfumes }: { perfumes: PerfumeDTO[] }) {
                 </button>
               </div>
             </div>
-            <div className="flex flex-wrap gap-2.5">
-              <button type="button" className="btn flex-1" disabled={!presentation?.inStock} onClick={() => addToCart(false)}>
+            <div className="grid gap-2.5 sm:grid-cols-2">
+              <button type="button" className="btn" disabled={!presentation?.inStock} onClick={() => addToCart(false)}>
                 Agregar al pedido
               </button>
-              <button type="button" className="btn btn-ghost flex-1" disabled={!presentation?.inStock} onClick={() => addToCart(true)}>
+              <button type="button" className="btn btn-ghost" disabled={!presentation?.inStock} onClick={() => addToCart(true)}>
                 Comprar ahora
               </button>
             </div>
