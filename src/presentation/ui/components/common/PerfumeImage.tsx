@@ -1,23 +1,10 @@
 import { BottleIllustration } from "./BottleIllustration";
 
 /** Muestra la foto del perfume o, si no tiene, el frasco ilustrado con su color. */
-export function PerfumeImage({
-  imageUrl,
-  color,
-  alt,
-  illustrationClass = "w-[46%]",
-  fill = false,
-}: {
-  imageUrl: string | null;
-  color: string;
-  alt: string;
-  illustrationClass?: string;
-  /** Ocupa todo el contenedor (que debe ser relative) sin desbordarlo. */
-  fill?: boolean;
-}) {
+export function PerfumeImage({ imageUrl, color, alt, illustrationClass = "w-[46%]" }: { imageUrl: string | null; color: string; alt: string; illustrationClass?: string }) {
   if (imageUrl) {
     // eslint-disable-next-line @next/next/no-img-element -- las fotos vienen de S3/CDN con su propio caché
-    return <img src={imageUrl} alt={alt} loading="lazy" className={fill ? "absolute inset-0 h-full w-full object-cover" : "h-full w-full object-cover"} />;
+    return <img src={imageUrl} alt={alt} loading="lazy" className="h-full w-full object-cover" />;
   }
   return <BottleIllustration color={color} className={illustrationClass} />;
 }
