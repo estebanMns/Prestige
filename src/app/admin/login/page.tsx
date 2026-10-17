@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { LoginForm } from "@/presentation/ui/components/admin/LoginForm";
 
 export const metadata: Metadata = { title: "Acceso administrativo", robots: { index: false, follow: false } };
@@ -20,8 +21,11 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
               Panel de <em className="text-accent">administración</em>
             </h1>
           </div>
-          <ul className="mt-auto hidden list-none gap-3 p-0 text-[13px] text-muted md:grid">
+          <ul className="hidden list-none gap-3 p-0 text-[13px] text-muted md:grid">
           </ul>
+          <Link href="/" className="note mt-auto w-fit underline-offset-4 hover:text-accent hover:underline">
+            ← Volver a la tienda
+          </Link>
         </aside>
         <div className="p-8">
           <LoginForm next={safeNext} />
