@@ -8,12 +8,33 @@ import { PerfumeImage } from "../common/PerfumeImage";
 import { useToast } from "../common/Toast";
 import { ApiError, api } from "../../lib/ApiClient";
 
-/** Lista del inventario con edición y borrado (con confirmación en la misma fila). */
+type FamilyFilter = "TODAS" | PerfumeDTO["category"];
+
+const FAMILIES: { value: FamilyFilter; label: string }[] = [
+  { value: "TODAS", label: "Todos" },
+  { value: "NICHO", label: "Nicho" },
+  { value: "ARABE", label: "Árabes" },
+  { value: "DISENADOR", label: "Diseñador" },
+];
+
+/** Quita tildes y mayúsculas para que la búsqueda encuentre "Árabe" escribiendo "arabe". */
+const normalize = (text: string) => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+/** Lista del inventario con búsqueda, filtro por familia, edición y borrado (con confirmación en la misma fila). */
 export function PerfumeTable({ perfumes, canDelete }: { perfumes: PerfumeDTO[]; canDelete: boolean }) {
   const router = useRouter();
   const toast = useToast((s) => s.show);
   const [confirming, setConfirming] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [family, setFamily] = useState<FamilyFilter>("TODAS");
+
+  const search = normalize(query.trim());
+  const visible = perfumes.filter(
+    (p) =>
+      (family === "TODAS" || p.category === family) &&
+      (search === "" || normalize(`${p.name} ${p.house} ${p.slug}`).includes(search)),
+  );
 
   const remove = async (perfume: PerfumeDTO) => {
     if (confirming !== perfume.id) {
@@ -43,6 +64,39 @@ export function PerfumeTable({ perfumes, canDelete }: { perfumes: PerfumeDTO[]; 
   }
 
   return (
+    <div className="grid gap-4">
+      <div className="flex flex-wrap items-center gap-3">
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Buscar por nombre o casa"
+          aria-label="Buscar perfume"
+          className="min-w-[240px] flex-1"
+        />
+        <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por familia">
+          {FAMILIES.map((f) => {
+            const count = f.value === "TODAS" ? perfumes.length : perfumes.filter((p) => p.category === f.value).length;
+            return (
+              <button
+                key={f.value}
+                type="button"
+                aria-pressed={family === f.value}
+                onClick={() => setFamily(f.value)}
+                className={`btn btn-sm ${family === f.value ? "" : "btn-ghost"}`}
+              >
+                {f.label} <span className="mono text-xs opacity-70">{count}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      {visible.length === 0 && (
+        <div className="rounded-[14px] border border-dashed border-[var(--line-strong)] p-8 text-center text-muted">
+          No hay perfumes con esa búsqueda.
+        </div>
+      )}
+      {visible.length > 0 && (
     <div className="overflow-x-auto rounded-[14px] border border-line">
       <table className="w-full min-w-[720px] border-collapse text-sm">
         <thead>
@@ -54,7 +108,7 @@ export function PerfumeTable({ perfumes, canDelete }: { perfumes: PerfumeDTO[]; 
           </tr>
         </thead>
         <tbody>
-          {perfumes.map((p) => (
+          {visible.map((p) => (
             <tr key={p.id} className="border-b border-line last:border-b-0">
               <td className="p-3">
                 <div className="flex items-center gap-3">
@@ -95,6 +149,8 @@ export function PerfumeTable({ perfumes, canDelete }: { perfumes: PerfumeDTO[]; 
           ))}
         </tbody>
       </table>
+    </div>
+      )}
     </div>
   );
 }

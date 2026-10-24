@@ -7,12 +7,12 @@ import { loadCatalog } from "@/presentation/server/storeData";
 
 export default async function HomePage() {
   const perfumes = await loadCatalog();
-  // Destacados que marca el administrador; si ninguno está marcado, muestra el catálogo completo.
+  // Solo los destacados que marca el administrador; si no hay ninguno, la franja no se muestra.
   const highlighted = perfumes.filter((perfume) => perfume.featured);
   return (
     <>
       <Hero perfumeCount={perfumes.length} />
-      <PerfumeMarquee perfumes={highlighted.length > 0 ? highlighted : perfumes} />
+      <PerfumeMarquee perfumes={highlighted} />
       <HouseCards />
       <Catalog perfumes={perfumes} />
       <ServicePromise />
